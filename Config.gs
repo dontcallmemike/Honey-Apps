@@ -95,9 +95,10 @@ const CONFIG = {
       '→ Product', 'Brand', 'Category', 'Available Qty', 'Low Stock'
     ],
 
+    // Store-specific promotion tabs (with expandable groups like master)
     PROMOTION_DETAIL: [
-      'Location', 'Discount Name', 'Product', 'Brand', 'Category',
-      'Available Qty', 'Amount', 'Type', 'Ends'
+      'Discount Name', 'Amount', 'Type', 'Ends', 'Products',
+      '→ Product', 'Brand', 'Category', 'Available Qty', 'Low Stock'
     ],
 
     DAILY_DEALS: [

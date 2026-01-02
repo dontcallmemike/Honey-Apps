@@ -123,11 +123,12 @@ const SheetUtils = {
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
 
-        // Check if this is a discount header row
+        // Check if this is a discount header row (first column has content, not starting with →)
         const isDiscountHeader = row[0] && row[0] !== '' && !row[0].toString().startsWith('→');
 
-        // Check if this is a product detail row
-        const isProductRow = !row[0] && row[6] && row[6].toString().startsWith('→');
+        // Check if this is a product detail row (first column empty, has → somewhere in the row)
+        // Works for both master tab (→ in col 6) and store tabs (→ in col 5)
+        const isProductRow = !row[0] && row.some(cell => cell && cell.toString().startsWith('→'));
 
         if (isDiscountHeader) {
           // Save previous group if it exists
