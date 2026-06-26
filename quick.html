@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Honeystash">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f12">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Honeystash — Quick Edit</title>
+<style>
+:root{
+  --bg:#0f0f12;--surface:#18181f;--surface2:#22222c;--surface3:#2a2a36;--border:#2e2e3d;
+  --accent:#c8f564;--accent2:#64d4f5;--accent4:#f5a524;
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
+  --open-text:#a8d464;--open-bg:#1a2e0a;--open-border:#4a7a1a;
+  --mid-text:#d4a464;--mid-bg:#2e1e0a;--mid-border:#7a4a1a;
+  --latemid-text:#d48464;--latemid-bg:#2e140a;--latemid-border:#7a3a1a;
+  --close-text:#d464a4;--close-bg:#2e0a1e;--close-border:#7a1a4a;
+  --latenight-text:#a464d4;--latenight-bg:#1a0a2e;--latenight-border:#4a1a7a;
+  --long-text:#64d4c4;--long-bg:#0a2e2a;--long-border:#1a7a6a;
+  --off-text:#4a4a5a;--off-bg:#18181f;
+  --warn:#f5a524;--error:#f55464;--ok:#64d484;--radius:10px;
+  --mono:'SFMono-Regular',ui-monospace,'Courier New',monospace;
+  --display:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overscroll-behavior-y:none;padding-bottom:env(safe-area-inset-bottom);}
+input,select,textarea{font-size:16px;}
+.topbar{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));}
+.tb-row{display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:var(--display);font-weight:800;font-size:16px;color:var(--accent);}
+.logo span{color:var(--text2);font-weight:400;font-size:12px;}
+.full-link{font-size:11px;color:var(--text3);text-decoration:none;border:1px solid var(--border);padding:5px 10px;border-radius:20px;}
+.daynav{display:flex;align-items:center;gap:8px;margin-top:10px;}
+.daynav button{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:40px;height:40px;border-radius:var(--radius);font-size:18px;}
+.daynav .daylabel{flex:1;text-align:center;font-family:var(--display);font-weight:700;font-size:15px;}
+.daynav .daylabel small{display:block;font-weight:400;font-size:11px;color:var(--text3);}
+.dots{display:flex;gap:4px;justify-content:center;margin-top:8px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--surface3);}
+.dot.active{background:var(--accent);}
+.dot.today{box-shadow:0 0 0 2px var(--accent2);}
+.content{padding:12px 14px 80px;max-width:560px;margin:0 auto;}
+.cov-summary{display:flex;gap:8px;margin-bottom:12px;}
+.cov-chip{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px;text-align:center;}
+.cov-chip .n{font-family:var(--display);font-size:18px;font-weight:700;}
+.cov-chip .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+.alert{display:flex;gap:8px;padding:9px 12px;border-radius:var(--radius);margin-bottom:8px;font-size:12px;align-items:flex-start;}
+.alert-error{background:#2e0a0a;border:1px solid #5a0a0a;color:var(--error);}
+.alert-warn{background:#2e1e0a;border:1px solid #5a3a0a;color:var(--warn);}
+.alert-ok{background:#0a2e1a;border:1px solid #0a5a2a;color:var(--ok);}
+.grp-label{font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:16px 0 6px;display:flex;align-items:center;gap:8px;}
+.grp-pip{width:8px;height:8px;border-radius:50%;}
+.grp-line{flex:1;height:1px;background:var(--border);}
+.row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:6px;}
+.row.has-flag{border-color:#5a1a1a;}
+.row-name{flex:1;min-width:0;}
+.row-name .nm{font-size:14px;font-weight:600;display:flex;align-items:center;gap:5px;}
+.row-name .sub{font-size:10px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row-pill{flex-shrink:0;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid;min-width:104px;text-align:center;}
+.sp-open{background:var(--open-bg);color:var(--open-text);border-color:var(--open-border);}
+.sp-mid{background:var(--mid-bg);color:var(--mid-text);border-color:var(--mid-border);}
+.sp-latemid{background:var(--latemid-bg);color:var(--latemid-text);border-color:var(--latemid-border);}
+.sp-close{background:var(--close-bg);color:var(--close-text);border-color:var(--close-border);}
+.sp-latenight{background:var(--latenight-bg);color:var(--latenight-text);border-color:var(--latenight-border);}
+.sp-long{background:var(--long-bg);color:var(--long-text);border-color:var(--long-border);}
+.sp-off{background:var(--off-bg);color:var(--off-text);border-color:var(--border);}
+.sp-add{background:transparent;color:var(--text3);border:1px dashed var(--border);}
+.flag{width:8px;height:8px;border-radius:50%;background:var(--error);flex-shrink:0;}
+.hrs-tag{font-size:10px;color:var(--text3);}
+.hrs-tag.over{color:var(--error);}.hrs-tag.warn{color:var(--warn);}
+/* sheet */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:flex-end;justify-content:center;}
+.sheet{background:var(--surface);border-top-left-radius:18px;border-top-right-radius:18px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;padding:8px 14px calc(20px + env(safe-area-inset-bottom));border:1px solid var(--border);}
+.sheet-handle{width:38px;height:4px;background:var(--surface3);border-radius:2px;margin:8px auto 12px;}
+.sheet-title{font-family:var(--display);font-weight:700;font-size:15px;margin-bottom:12px;text-align:center;}
+.opt{display:flex;align-items:center;gap:10px;padding:13px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);margin-bottom:6px;}
+.opt.blocked{opacity:.5;}
+.opt .sw{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.opt .ol{font-size:14px;font-weight:600;}
+.opt .blk{margin-left:auto;font-size:10px;color:var(--error);text-align:right;}
+.opt .chk{margin-left:auto;color:var(--accent);}
+.opt.blocked .chk{margin-left:0;}
+.custom-row{display:flex;gap:8px;margin-top:8px;}
+.custom-row input{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:var(--radius);}
+.btn{font-family:var(--mono);font-size:14px;padding:12px;border-radius:var(--radius);border:none;width:100%;font-weight:600;margin-top:6px;}
+.btn-accent{background:var(--accent);color:#0f0f12;}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+.empty{text-align:center;color:var(--text3);padding:30px;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="tb-row">
+    <div class="logo">Honeystash <span>quick</span></div>
+    <a class="full-link" href="index.html">Full view ›</a>
+  </div>
+  <div class="daynav">
+    <button onclick="go(-1)">‹</button>
+    <div class="daylabel" id="daylabel"></div>
+    <button onclick="go(1)">›</button>
+  </div>
+  <div class="dots" id="dots"></div>
+</div>
+<div class="content">
+  <div class="cov-summary" id="cov"></div>
+  <div id="alerts"></div>
+  <div id="rows"></div>
+</div>
+
+<div class="sheet-overlay" id="sheet" style="display:none">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title"></div>
+    <div id="opts"></div>
+    <div id="custom" style="display:none">
+      <div class="custom-row"><input type="time" id="cin"><input type="time" id="cout"></div>
+      <button class="btn btn-accent" onclick="saveCustom()">Save custom shift</button>
+    </div>
+    <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<script src="hs-core.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let day=(()=>{const t=new Date(),mw=HS.parseLocalDate(HS.getMonday(HS.todayStr()));const diff=Math.round((t-mw)/86400000);return diff>=0&&diff<7?diff:0;})();
+let editing=null;
+
+function go(n){day=(day+n+7)%7;render();}
+function swatchColor(type){if(type==='off')return 'var(--text3)';const c=HS.shiftClass(type).replace('sp-','');return `var(--${c}-text)`;}
+
+function render(){
+  const wk=HS.state.currentWeek;
+  $('daylabel').innerHTML=`${HS.DAY_LABELS[day]}<small>${HS.formatDate(wk,day)}</small>`;
+  $('dots').innerHTML=HS.DAYS.map((d,i)=>`<div class="dot ${i===day?'active':''}"></div>`).join('');
+
+  /* coverage chips */
+  const working=HS.state.employees.filter(e=>{const s=HS.getEmpShift(wk,e.id,day);return s&&s.type!=='off'&&HS.getShiftHours(s)>0;});
+  const floor=working.filter(HS.isFloorStaff);
+  const keys=working.filter(HS.isKeyholder);
+  const buds=working.filter(e=>HS.isBudtender(e)||HS.isSupervisor(e));
+  $('cov').innerHTML=`
+    <div class="cov-chip"><div class="n" style="color:${floor.length>=3?'var(--ok)':floor.length>=2?'var(--warn)':'var(--error)'}">${floor.length}</div><div class="l">on floor</div></div>
+    <div class="cov-chip"><div class="n" style="color:${buds.length>=2?'var(--ok)':'var(--error)'}">${buds.length}</div><div class="l">budtenders</div></div>
+    <div class="cov-chip"><div class="n" style="color:${keys.length>=1?'var(--ok)':'var(--error)'}">${keys.length}</div><div class="l">keyholders</div></div>`;
+
+  /* day-relevant alerts */
+  const{errors,warnings}=HS.detectConflicts(wk);
+  const dl=`${HS.DAYS[day]} ${HS.formatDate(wk,day)}`;
+  const rel=[...errors.filter(e=>e.name===dl||e.msg.includes(HS.DAYS[day])).map(e=>['error',e]),...warnings.filter(w=>w.name===dl||w.msg.includes(HS.DAYS[day])).map(w=>['warn',w])];
+  $('alerts').innerHTML = rel.length
+    ? rel.map(([t,a])=>`<div class="alert alert-${t}"><span>${t==='error'?'🚨':'⚠'}</span><span><strong>${a.name}</strong> — ${a.msg}</span></div>`).join('')
+    : (working.length?`<div class="alert alert-ok"><span>✓</span><span>${HS.DAYS[day]} looks good.</span></div>`:'');
+
+  /* rows grouped */
+  const staff=HS.state.employees.filter(HS.isFloorStaff);
+  let html='',lastGrp=null;
+  staff.forEach(emp=>{
+    const grp=HS.getRoleGroup(emp.role),gl=grp?grp.label:'Other',gc=grp?grp.color:'var(--text3)';
+    if(gl!==lastGrp){lastGrp=gl;html+=`<div class="grp-label"><span class="grp-pip" style="background:${gc}"></span><span style="color:${gc}">${gl}</span><span class="grp-line"></span></div>`;}
+    const s=HS.getEmpShift(wk,emp.id,day);
+    const wkHrs=HS.getEmpWeekHours(wk,emp.id);const cap=emp.rules?.maxHours||emp.cap;
+    let hrCls='';if(cap>0&&wkHrs>cap+0.5)hrCls='over';else if(wkHrs>40)hrCls='warn';
+    let pill,flag='';
+    if(s&&s.type!=='off'){const def=HS.SHIFT_DEFS[s.type]||{};const label=s.type==='custom'?`${HS.toSheetTime(s.in)}–${HS.toSheetTime(s.out)}`:def.label;pill=`<div class="row-pill ${HS.shiftClass(s.type)}">${label}</div>`;const chk=HS.checkAssignment(emp,day,s);if(!chk.ok)flag=`<span class="flag" title="${chk.reason}"></span>`;}
+    else if(HS.hasRequestOff(emp.id,day))pill=`<div class="row-pill sp-off">req off</div>`;
+    else if(emp.avail&&emp.avail[day]===0)pill=`<div class="row-pill sp-off">unavail</div>`;
+    else pill=`<div class="row-pill sp-add">+ add</div>`;
+    html+=`<div class="row ${flag?'has-flag':''}" onclick="openSheet(${emp.id})"><div class="row-name"><div class="nm">${flag}${emp.name.split(' ')[0]}${HS.isKeyholder(emp)?' 🔑':''}</div><div class="sub"><span class="hrs-tag ${hrCls}">${wkHrs}h wk${cap>0?` / ${cap}`:''}</span></div></div>${pill}</div>`;
+  });
+  $('rows').innerHTML=html||`<div class="empty">No floor staff in roster.</div>`;
+}
+
+function openSheet(eid){
+  editing={eid,day};const emp=HS.empById(eid);
+  $('sheet-title').textContent=`${emp.name.split(' ')[0]} — ${HS.DAYS[day]} ${HS.formatDate(HS.state.currentWeek,day)}`;
+  const cur=HS.getEmpShift(HS.state.currentWeek,eid,day);
+  $('custom').style.display='none';
+  $('opts').innerHTML='';
+  HS.SHIFT_ORDER.forEach(type=>{
+    const def=HS.SHIFT_DEFS[type];const opt=document.createElement('div');opt.className='opt';
+    let blk='';if(type!=='off'&&type!=='custom'){const c=HS.checkAssignment(emp,day,{type});if(!c.ok){opt.classList.add('blocked');blk=c.reason;}}
+    opt.innerHTML=`<span class="sw" style="background:${swatchColor(type)}"></span><span class="ol">${def.label}</span>${blk?`<span class="blk">⚠ ${blk}</span>`:''}${cur&&cur.type===type?'<span class="chk">✓</span>':''}`;
+    opt.onclick=()=>{if(type==='custom'){$('custom').style.display='block';$('cin').value=cur?.in||'';$('cout').value=cur?.out||'';return;}HS.setEmpShift(HS.state.currentWeek,eid,day,type==='off'?null:{type});closeSheet();render();};
+    $('opts').appendChild(opt);
+  });
+  $('sheet').style.display='flex';
+}
+function saveCustom(){const{eid,day:d}=editing;const iv=$('cin').value,ov=$('cout').value;if(!iv||!ov)return;let hrs=(HS.timeToMins(ov)-HS.timeToMins(iv))/60;if(hrs<0)hrs+=24;HS.setEmpShift(HS.state.currentWeek,eid,d,{type:'custom',in:iv,out:ov,hrs});closeSheet();render();}
+function closeSheet(){$('sheet').style.display='none';editing=null;}
+$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))closeSheet();});
+
+/* swipe days */
+let sx=0,sy=0,st=0;
+document.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
+document.addEventListener('touchend',e=>{if($('sheet').style.display==='flex')return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.8&&Date.now()-st<600)go(dx<0?1:-1);},{passive:true});
+
+HS.onChange(render);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+render();
+</script>
+</body>
+</html>

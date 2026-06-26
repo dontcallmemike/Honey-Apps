@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Honeystash">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f12">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<title>Honeystash Scheduler</title>
+<style>
+:root{
+  --bg:#0f0f12;--surface:#18181f;--surface2:#22222c;--surface3:#2a2a36;
+  --border:#2e2e3d;--accent:#c8f564;--accent2:#64d4f5;--accent3:#f564a9;--accent4:#f5a524;
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
+  --open-bg:#1a2e0a;--open-text:#a8d464;--open-border:#4a7a1a;
+  --mid-bg:#2e1e0a;--mid-text:#d4a464;--mid-border:#7a4a1a;
+  --latemid-bg:#2e140a;--latemid-text:#d48464;--latemid-border:#7a3a1a;
+  --close-bg:#2e0a1e;--close-text:#d464a4;--close-border:#7a1a4a;
+  --latenight-bg:#1a0a2e;--latenight-text:#a464d4;--latenight-border:#4a1a7a;
+  --long-bg:#0a2e2a;--long-text:#64d4c4;--long-border:#1a7a6a;
+  --off-bg:#18181f;--off-text:#4a4a5a;
+  --warn:#f5a524;--error:#f55464;--ok:#64d484;
+  --radius:8px;--radius-lg:14px;
+  --mono:'SFMono-Regular',ui-monospace,'Cascadia Code','Courier New',monospace;
+  --display:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;-webkit-tap-highlight-color:transparent;}
+input,select,textarea{font-size:14px;}
+button,.btn,.tab,.shift-pill,.add-shift-btn{-webkit-touch-callout:none;user-select:none;}
+.app{display:flex;flex-direction:column;min-height:100vh;}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:baseline;gap:10px;}
+.logo{font-family:var(--display);font-weight:800;font-size:18px;color:var(--accent);letter-spacing:-.01em;}
+.logo span{color:var(--text2);font-weight:400;}
+.phone-link{font-size:11px;color:var(--text3);text-decoration:none;border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
+.phone-link:hover{border-color:var(--accent2);color:var(--accent2);}
+.week-selector{display:flex;align-items:center;gap:10px;}
+.week-nav{background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:30px;height:30px;border-radius:var(--radius);cursor:pointer;font-size:15px;}
+.week-nav:hover{border-color:var(--accent);color:var(--accent);}
+.week-label{font-size:12px;color:var(--text2);min-width:150px;text-align:center;}
+.week-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 10px;border-radius:var(--radius);cursor:pointer;}
+.week-input:focus{outline:none;border-color:var(--accent);}
+.tabs{display:flex;gap:2px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;overflow-x:auto;}
+.tab{font-family:var(--display);font-size:12px;font-weight:600;padding:12px 18px;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;}
+.tab:hover{color:var(--text2);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.content{flex:1;padding:20px 24px;max-width:1500px;width:100%;margin:0 auto;}
+.hidden{display:none!important;}
+.btn{font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:var(--radius);border:none;cursor:pointer;transition:all .15s;font-weight:500;}
+.btn-accent{background:var(--accent);color:#0f0f12;}
+.btn-accent:hover{background:#d4ff70;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--text2);color:var(--text);}
+.btn-danger{background:transparent;color:var(--error);border:1px solid var(--error);}
+.btn-danger:hover{background:var(--error);color:#fff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 12px;border-radius:var(--radius);width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+select option{background:var(--surface2);}
+label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;}
+.form-row{display:grid;gap:12px;margin-bottom:12px;}
+.form-2{grid-template-columns:1fr 1fr;}
+.form-3{grid-template-columns:1fr 1fr 1fr;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.card-title{font-family:var(--display);font-weight:700;font-size:14px;color:var(--text);}
+.card-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;border:1px solid;}
+.badge-ft{background:#1a2e1a;color:var(--ok);border-color:#2a5a2a;}
+.badge-pt{background:#2e2a0a;color:var(--accent4);border-color:#5a4a0a;}
+.badge-key{background:#2e1a0a;color:#f59a24;border-color:#5a3a0a;}
+.badge-rule{background:#1a1a2e;color:var(--accent2);border-color:#2a2a5a;}
+
+/* schedule grid */
+.sched-wrap{overflow-x:auto;}
+.sched-grid{display:grid;grid-template-columns:160px repeat(7,minmax(96px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;min-width:880px;}
+.sg-header{background:var(--surface2);padding:10px 8px;font-family:var(--display);font-size:11px;font-weight:700;color:var(--text2);text-align:center;text-transform:uppercase;letter-spacing:.05em;}
+.sg-header.weekend{background:#1a1a2e;color:var(--accent2);}
+.sg-group-header{grid-column:1 / -1;display:flex;align-items:center;gap:10px;padding:6px 12px 4px;font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid var(--border);}
+.sg-group-header:first-of-type{border-top:none;}
+.sg-group-pip{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sg-group-line{flex:1;height:1px;background:var(--border);}
+.sg-name{background:var(--surface2);padding:8px 12px;display:flex;flex-direction:column;justify-content:center;cursor:grab;position:relative;}
+.sg-emp{font-size:12px;font-weight:600;color:var(--text);}
+.sg-role{font-size:10px;color:var(--text3);margin-top:1px;}
+.drag-handle{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;cursor:grab;}
+.sg-name:hover .drag-handle{color:var(--text2);}
+.sg-cell{background:var(--surface);padding:5px;display:flex;flex-direction:column;gap:3px;min-height:52px;position:relative;}
+.sg-cell.weekend{background:#13131e;}
+.shift-pill{border-radius:5px;padding:4px 6px;font-size:10px;font-weight:600;text-align:center;cursor:pointer;border:1px solid;transition:opacity .1s;line-height:1.25;}
+.shift-pill:hover{opacity:.82;}
+.sp-open{background:var(--open-bg);color:var(--open-text);border-color:var(--open-border);}
+.sp-mid{background:var(--mid-bg);color:var(--mid-text);border-color:var(--mid-border);}
+.sp-latemid{background:var(--latemid-bg);color:var(--latemid-text);border-color:var(--latemid-border);}
+.sp-close{background:var(--close-bg);color:var(--close-text);border-color:var(--close-border);}
+.sp-latenight{background:var(--latenight-bg);color:var(--latenight-text);border-color:var(--latenight-border);}
+.sp-long{background:var(--long-bg);color:var(--long-text);border-color:var(--long-border);}
+.sp-off{background:var(--off-bg);color:var(--off-text);border-color:var(--border);}
+.sp-reqoff{background:#2e0a1444;color:#f564a9;border-color:#7a0a3a55;font-style:italic;}
+.sp-unavail{background:var(--off-bg);color:var(--text3);border-color:var(--border);font-style:italic;}
+.sp-pref{background:#2e1e0a44;color:var(--accent4);border-color:#7a4a0a55;font-style:italic;}
+.conflict-flag{position:absolute;top:2px;right:2px;width:7px;height:7px;background:var(--error);border-radius:50%;box-shadow:0 0 0 2px var(--surface);}
+.add-shift-btn{border:1px dashed var(--border);background:transparent;color:var(--text3);border-radius:5px;padding:6px;font-size:13px;cursor:pointer;text-align:center;width:100%;line-height:1;}
+.add-shift-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* hours strip */
+.hours-row{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;}
+.hrs-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;flex:1;min-width:78px;}
+.hrs-name{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;}
+.hrs-num{font-size:20px;font-weight:600;color:var(--text);font-family:var(--display);margin:2px 0;}
+.hrs-cap{font-size:10px;color:var(--text3);}
+.hrs-ok{color:var(--ok);}.hrs-warn{color:var(--warn);}.hrs-over{color:var(--error);}
+
+/* alerts */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--radius);margin-bottom:8px;font-size:12px;}
+.alert-warn{background:#2e1e0a;border:1px solid #5a3a0a;color:var(--warn);}
+.alert-error{background:#2e0a0a;border:1px solid #5a0a0a;color:var(--error);}
+.alert-ok{background:#0a2e1a;border:1px solid #0a5a2a;color:var(--ok);}
+.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+
+/* daily */
+.daily-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.day-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+.day-card.weekend{border-color:#2a2a5a;}
+.day-header{padding:10px 12px;background:var(--surface2);font-family:var(--display);font-size:12px;font-weight:700;color:var(--text2);display:flex;justify-content:space-between;align-items:center;}
+.day-header.weekend{background:#1a1a2e;color:var(--accent2);}
+.day-body{padding:8px;}
+.cov-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--surface3);margin-bottom:8px;}
+.cov-seg{height:100%;}
+.brk-row{display:flex;justify-content:space-between;align-items:center;padding:5px 6px;border-radius:5px;font-size:11px;margin-bottom:3px;background:var(--surface2);}
+.brk-name{font-weight:600;}
+.brk-time{color:var(--text2);font-size:10px;}
+.coverage-count{font-size:10px;font-weight:600;}
+
+/* roster */
+.emp-list{display:flex;flex-direction:column;gap:8px;}
+.emp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;}
+.emp-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.emp-card-name{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);}
+.emp-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.emp-details{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px;}
+.avail-day{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:5px;text-align:center;}
+.avail-day-label{font-size:9px;color:var(--text3);text-transform:uppercase;}
+.avail-day-val{font-size:10px;color:var(--text2);margin-top:2px;}
+.avail-day.avail{border-color:#2a5a2a;}
+.avail-day.unavail{border-color:#5a0a0a;background:#2e0a0a;opacity:.7;}
+.avail-day.unavail .avail-day-val{color:var(--error);}
+.avail-day.pref{border-color:#5a4a0a;background:#2e1e0a;}
+.avail-day.pref .avail-day-val{color:var(--accent4);}
+.emp-notes{margin-top:8px;font-size:11px;color:var(--text2);padding:6px 10px;background:var(--surface2);border-radius:5px;border-left:2px solid var(--border);}
+
+/* requests */
+.req-list{display:flex;flex-direction:column;gap:8px;}
+.req-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+
+/* export */
+.export-box{background:#0a0a0d;border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-size:11px;white-space:pre;overflow-x:auto;color:var(--text2);max-height:340px;overflow-y:auto;line-height:1.5;}
+.export-note{background:#2e1e0a;border:1px solid #5a3a0a;color:var(--warn);padding:10px 14px;border-radius:var(--radius);font-size:12px;margin-bottom:12px;}
+
+/* sync */
+.sync-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:640px){.sync-grid{grid-template-columns:1fr;}}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:var(--display);font-size:16px;font-weight:700;margin-bottom:16px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+.shift-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);cursor:pointer;margin-bottom:6px;transition:all .12s;}
+.shift-opt:hover{border-color:var(--accent);}
+.shift-opt.blocked{opacity:.45;}
+.shift-opt.blocked:hover{border-color:var(--error);}
+.shift-swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.shift-opt-label{font-size:13px;font-weight:600;}
+.shift-opt-block{font-size:10px;color:var(--error);margin-left:auto;text-align:right;}
+
+/* context menu */
+.ctx-menu{position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:5px;z-index:300;min-width:180px;box-shadow:0 10px 40px rgba(0,0,0,.5);}
+.ctx-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:5px 10px 3px;}
+.ctx-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;font-size:12px;cursor:pointer;}
+.ctx-item:hover{background:var(--surface3);}
+.ctx-divider{height:1px;background:var(--border);margin:4px 0;}
+
+.empty{text-align:center;color:var(--text3);padding:40px 20px;font-size:13px;}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:10px;color:var(--text2);}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-swatch{width:10px;height:10px;border-radius:3px;border:1px solid;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <div class="logo">Honeystash <span>Scheduler</span></div>
+      <a class="phone-link" href="quick.html">📱 Phone view</a>
+    </div>
+    <div class="week-selector">
+      <button class="week-nav" onclick="shiftWeek(-1)" title="Previous week">‹</button>
+      <input type="date" class="week-input" id="weekStart">
+      <span class="week-label" id="weekRangeLabel"></span>
+      <button class="week-nav" onclick="shiftWeek(1)" title="Next week">›</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('schedule',this)">Schedule</div>
+    <div class="tab" onclick="switchTab('daily',this)">Daily View</div>
+    <div class="tab" onclick="switchTab('roster',this)">Roster</div>
+    <div class="tab" onclick="switchTab('requests',this)">Requests</div>
+    <div class="tab" onclick="switchTab('export',this)">Export</div>
+    <div class="tab" onclick="switchTab('sync',this)">Sync</div>
+  </div>
+
+  <div class="content">
+    <!-- SCHEDULE -->
+    <div id="tab-schedule">
+      <div id="alerts-container"></div>
+      <div class="sched-wrap"><div class="sched-grid" id="sched-grid"></div></div>
+      <div class="legend" id="legend"></div>
+      <div class="hours-row" id="hours-container"></div>
+    </div>
+
+    <!-- DAILY -->
+    <div id="tab-daily" class="hidden">
+      <div class="card-header"><div><div class="card-title">Daily coverage & breaks</div><div class="card-sub">Auto-staggered breaks start ~2.5 hrs in. ≤5 hrs = 15 min paid · over 5 hrs = 30 min unpaid.</div></div></div>
+      <div class="daily-grid" id="daily-grid"></div>
+    </div>
+
+    <!-- ROSTER -->
+    <div id="tab-roster" class="hidden">
+      <div class="card-header">
+        <div><div class="card-title">Roster</div><div class="card-sub" id="roster-count"></div></div>
+        <button class="btn btn-accent btn-sm" onclick="openAddEmployee()">+ Add person</button>
+      </div>
+      <div class="emp-list" id="emp-list"></div>
+    </div>
+
+    <!-- REQUESTS -->
+    <div id="tab-requests" class="hidden">
+      <div class="card-header">
+        <div><div class="card-title">Time off & notes</div><div class="card-sub">Shows as a pill on the schedule and an alert that week.</div></div>
+        <button class="btn btn-accent btn-sm" onclick="openAddRequest()">+ Add request</button>
+      </div>
+      <div class="req-list" id="req-list"></div>
+    </div>
+
+    <!-- EXPORT -->
+    <div id="tab-export" class="hidden">
+      <div class="card-header"><div class="card-title">Google Sheets export</div><button class="btn btn-accent btn-sm" id="copy-btn" onclick="copyExport(this)">Copy to clipboard</button></div>
+      <div class="export-note">Copy → open your weekly sheet tab → click cell <strong>A8</strong> → paste. Don't paste into the template copy.</div>
+      <div class="export-box" id="export-box"></div>
+    </div>
+
+    <!-- SYNC -->
+    <div id="tab-sync" class="hidden">
+      <div class="card-header"><div><div class="card-title">Move data between devices</div><div class="card-sub">No account needed. Save a backup on one device, load it on another.</div></div></div>
+      <div class="sync-grid">
+        <div class="card">
+          <div class="card-title" style="font-size:13px;margin-bottom:8px;">Save backup</div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">Downloads everything — roster, schedules, requests — as one file. AirDrop or iCloud it to your phone, then load it there.</p>
+          <button class="btn btn-accent btn-sm" onclick="doDownload()">Download backup file</button>
+          <button class="btn btn-ghost btn-sm" onclick="doCopyJSON(this)" style="margin-top:8px;">Copy as text</button>
+        </div>
+        <div class="card">
+          <div class="card-title" style="font-size:13px;margin-bottom:8px;">Load backup</div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">Replaces the data on <em>this</em> device with the backup. Picks up exactly where the other device left off.</p>
+          <input type="file" id="import-file" accept=".json,application/json" style="margin-bottom:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="pasteImport()">Paste backup text instead</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px;border-style:dashed;">
+        <div class="card-sub">Want live sync (no files)? This is built to add it later — connecting to a small cloud store or straight to your Google Sheet — without rebuilding anything. Say the word when you're ready.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHIFT MODAL -->
+<div class="modal-overlay hidden" id="shift-modal">
+  <div class="modal">
+    <div class="modal-title" id="shift-modal-title">Assign shift</div>
+    <div id="shift-opts"></div>
+    <div id="custom-fields" class="hidden">
+      <div class="form-row form-2">
+        <div><label>In</label><input type="time" id="custom-in"></div>
+        <div><label>Out</label><input type="time" id="custom-out"></div>
+      </div>
+      <button class="btn btn-accent btn-sm" onclick="saveCustom()">Save custom shift</button>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeShiftModal()">Cancel</button></div>
+  </div>
+</div>
+
+<!-- EMPLOYEE MODAL -->
+<div class="modal-overlay hidden" id="emp-modal">
+  <div class="modal">
+    <div class="modal-title" id="emp-modal-title">Add person</div>
+    <div class="form-row form-2">
+      <div><label>First name</label><input id="emp-fname"></div>
+      <div><label>Last name</label><input id="emp-lname"></div>
+    </div>
+    <div class="form-row form-2">
+      <div><label>Role</label><select id="emp-role"></select></div>
+      <div><label>Type</label><select id="emp-type"><option value="FT">Full time</option><option value="PT">Part time</option></select></div>
+    </div>
+    <div class="form-row form-3">
+      <div><label>Hour cap (0=none)</label><input type="number" id="emp-cap" value="0" min="0"></div>
+      <div><label>OT eligible</label><select id="emp-ot"><option value="no">No</option><option value="yes">Yes</option></select></div>
+      <div><label>Keyholder</label><select id="emp-key"><option value="no">No</option><option value="yes">Yes</option></select></div>
+    </div>
+    <div class="form-row"><div><label>Availability (tap to cycle: ✓ avail · ✕ off · ◐ prefers off)</label><div class="emp-details" id="avail-fields"></div></div></div>
+    <div class="form-row"><div><label>Notes</label><textarea id="emp-notes" rows="2"></textarea></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm hidden" id="emp-delete-btn" onclick="deleteEmployee()">Delete</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeEmpModal()">Cancel</button>
+      <button class="btn btn-accent btn-sm" id="emp-save-btn" onclick="saveEmployee()">Add person</button>
+    </div>
+  </div>
+</div>
+
+<!-- REQUEST MODAL -->
+<div class="modal-overlay hidden" id="req-modal">
+  <div class="modal">
+    <div class="modal-title">Add request / note</div>
+    <div class="form-row"><div><label>Employee</label><select id="req-emp"></select></div></div>
+    <div class="form-row form-2">
+      <div><label>Type</label><select id="req-type"><option value="off">Time off</option><option value="avail">Availability change</option><option value="note">Note</option></select></div>
+      <div><label>Date(s)</label><input type="text" id="req-dates" placeholder="6/7 or 6/7-6/9"></div>
+    </div>
+    <div class="form-row"><div><label>Details</label><textarea id="req-detail" rows="2"></textarea></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeReqModal()">Cancel</button><button class="btn btn-accent btn-sm" onclick="saveRequest()">Save</button></div>
+  </div>
+</div>
+
+<script src="hs-core.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let editingShift=null, editingEmpId=null, dragSrcId=null, availDraft=[1,1,1,1,1,1,1];
+
+/* ---- WEEK ---- */
+function shiftWeek(n){const d=HS.parseLocalDate(HS.state.currentWeek);d.setDate(d.getDate()+n*7);HS.setWeek(HS.toDateStr(d));$('weekStart').value=HS.state.currentWeek;updateWeekLabel();renderAll();}
+function updateWeekLabel(){const s=HS.addDays(HS.state.currentWeek,0),e=HS.addDays(HS.state.currentWeek,6);$('weekRangeLabel').textContent=`${s.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${e.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;}
+$('weekStart').addEventListener('change',function(){HS.setWeek(this.value);this.value=HS.state.currentWeek;updateWeekLabel();renderAll();});
+
+/* ---- SCHEDULE ---- */
+function renderSchedule(){
+  const wk=HS.state.currentWeek,grid=$('sched-grid');grid.innerHTML='';
+  const nh=document.createElement('div');nh.className='sg-header';nh.textContent='Employee';grid.appendChild(nh);
+  HS.DAYS.forEach((d,i)=>{const h=document.createElement('div');h.className='sg-header'+(i>=5?' weekend':'');h.innerHTML=`${d}<br><span style="font-weight:400;color:var(--text3)">${HS.formatDate(wk,i)}</span>`;grid.appendChild(h);});
+  const staff=HS.state.employees.filter(HS.isFloorStaff);
+  let lastGrp=null;
+  staff.forEach(emp=>{
+    const grp=HS.getRoleGroup(emp.role),gl=grp?grp.label:'Other',gc=grp?grp.color:'var(--text3)';
+    if(gl!==lastGrp){lastGrp=gl;const sep=document.createElement('div');sep.className='sg-group-header';sep.innerHTML=`<div class="sg-group-pip" style="background:${gc}"></div><span style="color:${gc}">${gl}</span><div class="sg-group-line"></div>`;grid.appendChild(sep);}
+    const nc=document.createElement('div');nc.className='sg-name';nc.draggable=true;nc.dataset.empId=emp.id;
+    nc.innerHTML=`<div class="sg-emp">${emp.name.split(' ')[0]}${HS.isKeyholder(emp)?' <span style="font-size:9px">🔑</span>':''}</div><div class="sg-role" style="color:${gc}">${emp.role}</div><div class="drag-handle">⠿</div>`;
+    nc.addEventListener('dragstart',e=>{dragSrcId=emp.id;nc.style.opacity='.4';e.dataTransfer.effectAllowed='move';});
+    nc.addEventListener('dragend',()=>{nc.style.opacity='1';dragSrcId=null;document.querySelectorAll('.sg-name').forEach(n=>n.style.borderLeft='');});
+    nc.addEventListener('dragover',e=>{e.preventDefault();nc.style.borderLeft='2px solid var(--accent)';});
+    nc.addEventListener('dragleave',()=>nc.style.borderLeft='');
+    nc.addEventListener('drop',e=>{e.preventDefault();nc.style.borderLeft='';if(dragSrcId&&dragSrcId!==emp.id){HS.reorderEmployee(dragSrcId,emp.id);renderAll();}});
+    nc.addEventListener('contextmenu',e=>{e.preventDefault();showCtxMenu(e.clientX,e.clientY,emp);});
+    grid.appendChild(nc);
+    HS.DAYS.forEach((d,di)=>{
+      const cell=document.createElement('div');cell.className='sg-cell'+(di>=5?' weekend':'');
+      const s=HS.getEmpShift(wk,emp.id,di);
+      if(s&&s.type!=='off'){
+        const def=HS.SHIFT_DEFS[s.type]||{};
+        const pill=document.createElement('div');pill.className=`shift-pill ${HS.shiftClass(s.type)}`;
+        pill.textContent=s.type==='custom'?`${HS.toSheetTime(s.in)}–${HS.toSheetTime(s.out)}`:(def.label||s.type);
+        pill.onclick=()=>openShiftModal(emp.id,di);cell.appendChild(pill);
+        const chk=HS.checkAssignment(emp,di,s);
+        if(!chk.ok){const f=document.createElement('div');f.className='conflict-flag';f.title=chk.reason;cell.appendChild(f);}
+      } else if(HS.hasRequestOff(emp.id,di)){
+        const p=document.createElement('div');p.className='shift-pill sp-reqoff';p.textContent='req off';p.onclick=()=>openShiftModal(emp.id,di);cell.appendChild(p);
+      } else if(emp.avail&&emp.avail[di]===0){
+        const p=document.createElement('div');p.className='shift-pill sp-unavail';p.textContent='unavail';p.onclick=()=>openShiftModal(emp.id,di);cell.appendChild(p);
+      } else if(emp.avail&&emp.avail[di]===2){
+        const p=document.createElement('div');p.className='shift-pill sp-pref';p.textContent='pref off';p.onclick=()=>openShiftModal(emp.id,di);cell.appendChild(p);
+      } else {const b=document.createElement('button');b.className='add-shift-btn';b.textContent='+';b.onclick=()=>openShiftModal(emp.id,di);cell.appendChild(b);}
+      grid.appendChild(cell);
+    });
+  });
+  renderLegend();renderHours();renderAlerts();
+}
+function renderLegend(){
+  const cats=[['open','Open'],['mid','Mid'],['latemid','Late Mid'],['close','Close'],['latenight','Late Night'],['long','10 hr']];
+  $('legend').innerHTML=cats.map(([c,l])=>`<span class="legend-item"><span class="legend-swatch sp-${c}"></span>${l}</span>`).join('');
+}
+function renderHours(){
+  const c=$('hours-container');c.innerHTML='';
+  HS.state.employees.filter(HS.isFloorStaff).forEach(emp=>{
+    const hrs=HS.getEmpWeekHours(HS.state.currentWeek,emp.id),cap=emp.rules?.maxHours||emp.cap;
+    let cls='hrs-ok';if(cap>0&&hrs>cap+0.5)cls='hrs-over';else if(cap>0&&hrs>cap)cls='hrs-warn';else if(hrs>40)cls='hrs-warn';
+    const card=document.createElement('div');card.className='hrs-card';
+    card.innerHTML=`<div class="hrs-name">${emp.name.split(' ')[0]}</div><div class="hrs-num ${cls}">${hrs}</div><div class="hrs-cap">${cap>0?`cap ${cap}`:emp.type}</div>`;
+    c.appendChild(card);
+  });
+}
+function renderAlerts(){
+  const c=$('alerts-container');c.innerHTML='';
+  const{errors,warnings}=HS.detectConflicts(HS.state.currentWeek);
+  const seen=new Set();
+  HS.state.requests.forEach(r=>{if(r.type!=='off'||!r.dates||seen.has(r.empId))return;for(let d=0;d<7;d++){if(HS.hasRequestOff(r.empId,d)){seen.add(r.empId);const div=document.createElement('div');div.className='alert alert-warn';div.innerHTML=`<span class="alert-icon">📅</span><span><strong>${r.empName}</strong> — off: ${r.dates}${r.detail?' · '+r.detail:''}</span>`;c.appendChild(div);break;}}});
+  errors.forEach(e=>{const div=document.createElement('div');div.className='alert alert-error';div.innerHTML=`<span class="alert-icon">🚨</span><span><strong>${e.name}</strong> — ${e.msg}</span>`;c.appendChild(div);});
+  warnings.forEach(w=>{const div=document.createElement('div');div.className='alert alert-warn';div.innerHTML=`<span class="alert-icon">⚠</span><span><strong>${w.name}</strong> — ${w.msg}</span>`;c.appendChild(div);});
+  if(!errors.length&&!warnings.length&&!seen.size)c.innerHTML=`<div class="alert alert-ok"><span class="alert-icon">✓</span><span>No conflicts — schedule looks good.</span></div>`;
+}
+
+/* ---- DAILY ---- */
+const CAT_COLORS={open:'var(--open-text)',mid:'var(--mid-text)',latemid:'var(--latemid-text)',close:'var(--close-text)',latenight:'var(--latenight-text)',long:'var(--long-text)'};
+function renderDaily(){
+  const grid=$('daily-grid');grid.innerHTML='';
+  HS.DAYS.forEach((day,di)=>{
+    const isWE=di>=5,assigned=HS.scheduleDayBreaks(HS.state.currentWeek,di),fc=assigned.length;
+    const card=document.createElement('div');card.className='day-card'+(isWE?' weekend':'');
+    const cc=fc>=5?'var(--ok)':fc>=3?'var(--warn)':'var(--error)';
+    let segs='';assigned.forEach(a=>{segs+=`<div class="cov-seg" style="flex:${a.hrs};background:${CAT_COLORS[HS.shiftCat(a.shift)]||'var(--text3)'}"></div>`;});
+    let brks='';if(assigned.length===0){brks=`<div class="empty" style="padding:16px">No one scheduled</div>`;}
+    else assigned.forEach(a=>{brks+=`<div class="brk-row"><span class="brk-name">${a.emp.name.split(' ')[0]}${HS.isKeyholder(a.emp)?' 🔑':''}</span><span class="brk-time">${HS.minsToTime(a.breakStart)} · ${a.breakInfo.label}</span></div>`;});
+    card.innerHTML=`<div class="day-header ${isWE?'weekend':''}"><span>${day} ${HS.formatDate(HS.state.currentWeek,di)}</span><span class="coverage-count" style="color:${cc}">${fc} on floor</span></div><div class="day-body"><div class="cov-bar">${segs}</div>${brks}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ---- ROSTER ---- */
+function ruleBadges(emp){
+  const r=emp.rules||{},out=[];
+  if(r.noOpen)out.push('no opens');if(r.closesOnly)out.push('closes only');
+  if(r.noClose)out.push('no close '+r.noClose.map(d=>HS.DAYS[d]).join('/'));
+  if(r.earliestStart)out.push('from '+HS.toSheetTime(r.earliestStart));
+  if(r.latestEnd)out.push('by '+HS.toSheetTime(r.latestEnd));
+  if(r.maxHours)out.push('max '+r.maxHours+'h');
+  return out.map(t=>`<span class="badge badge-rule">${t}</span>`).join('');
+}
+function renderRoster(){
+  const list=$('emp-list');list.innerHTML='';
+  $('roster-count').textContent=`${HS.state.employees.length} people`;
+  HS.state.employees.forEach(emp=>{
+    const grp=HS.getRoleGroup(emp.role),gc=grp?grp.color:'var(--text3)';
+    const card=document.createElement('div');card.className='emp-card';
+    let avail='';HS.DAYS.forEach((d,i)=>{const v=emp.avail?emp.avail[i]:1,cls=v===0?'unavail':v===2?'pref':'avail';avail+=`<div class="avail-day ${cls}"><div class="avail-day-label">${d}</div><div class="avail-day-val">${v===0?'✕':v===2?'◐':'✓'}</div></div>`;});
+    card.innerHTML=`<div class="emp-card-top"><div><div class="emp-card-name">${emp.name}</div><div class="emp-badges"><span class="badge" style="color:${gc};border-color:${gc}55">${emp.role}</span><span class="badge ${emp.type==='FT'?'badge-ft':'badge-pt'}">${emp.type}</span>${HS.isKeyholder(emp)?'<span class="badge badge-key">🔑 key</span>':''}${ruleBadges(emp)}</div></div><button class="btn btn-ghost btn-sm" onclick="openEditEmployee(${emp.id})">Edit</button></div><div class="emp-details">${avail}</div>${emp.notes?`<div class="emp-notes">${emp.notes}</div>`:''}`;
+    list.appendChild(card);
+  });
+}
+
+/* ---- REQUESTS ---- */
+function renderRequests(){
+  const list=$('req-list');list.innerHTML='';
+  if(!HS.state.requests.length){list.innerHTML=`<div class="empty">No requests yet.</div>`;return;}
+  HS.state.requests.forEach((r,i)=>{
+    const card=document.createElement('div');card.className='req-card';
+    const tl=r.type==='off'?'Time off':r.type==='avail'?'Availability':'Note';
+    card.innerHTML=`<div><div style="font-weight:600;font-size:13px">${r.empName} <span style="color:var(--text3);font-weight:400">· ${tl}</span></div><div style="font-size:11px;color:var(--text2);margin-top:2px">${r.dates||''}${r.detail?' — '+r.detail:''}</div></div><button class="btn btn-ghost btn-sm" onclick="removeRequest(${i})">Remove</button>`;
+    list.appendChild(card);
+  });
+}
+
+/* ---- EXPORT ---- */
+function renderExport(){$('export-box').textContent=HS.buildExport(HS.state.currentWeek);}
+function copyExport(btn){const txt=HS.buildExport(HS.state.currentWeek);navigator.clipboard?.writeText(txt).then(()=>flash(btn,'✓ Copied!')).catch(()=>flash(btn,'Press Ctrl+C'));}
+function flash(btn,msg){const o=btn.textContent;btn.textContent=msg;btn.style.background='var(--ok)';setTimeout(()=>{btn.textContent=o;btn.style.background='';},1800);}
+
+/* ---- SHIFT MODAL (constraint-aware) ---- */
+function openShiftModal(eid,di){
+  editingShift={eid,di};const emp=HS.empById(eid);
+  $('shift-modal-title').textContent=`${emp.name.split(' ')[0]} — ${HS.DAYS[di]} ${HS.formatDate(HS.state.currentWeek,di)}`;
+  const cur=HS.getEmpShift(HS.state.currentWeek,eid,di);
+  const box=$('shift-opts');box.innerHTML='';$('custom-fields').classList.add('hidden');
+  HS.SHIFT_ORDER.forEach(type=>{
+    const def=HS.SHIFT_DEFS[type];
+    const opt=document.createElement('div');opt.className='shift-opt';
+    let blockMsg='';
+    if(type!=='off'&&type!=='custom'){const chk=HS.checkAssignment(emp,di,{type});if(!chk.ok){opt.classList.add('blocked');blockMsg=chk.reason;}}
+    const sw=type==='off'?'var(--text3)':`var(--${HS.shiftClass(type).replace('sp-','')}-text)`;
+    opt.innerHTML=`<span class="shift-swatch" style="background:${type==='off'?'var(--text3)':sw}"></span><span class="shift-opt-label">${def.label}</span>${blockMsg?`<span class="shift-opt-block">⚠ ${blockMsg}</span>`:''}${cur&&cur.type===type?'<span style="margin-left:auto;color:var(--accent)">✓</span>':''}`;
+    opt.onclick=()=>{
+      if(type==='custom'){$('custom-fields').classList.remove('hidden');$('custom-in').value=cur?.in||'';$('custom-out').value=cur?.out||'';return;}
+      HS.setEmpShift(HS.state.currentWeek,eid,di,type==='off'?null:{type});closeShiftModal();renderAll();
+    };
+    box.appendChild(opt);
+  });
+  $('shift-modal').classList.remove('hidden');
+}
+function saveCustom(){const{eid,di}=editingShift;const iv=$('custom-in').value,ov=$('custom-out').value;if(!iv||!ov)return;let hrs=(HS.timeToMins(ov)-HS.timeToMins(iv))/60;if(hrs<0)hrs+=24;HS.setEmpShift(HS.state.currentWeek,eid,di,{type:'custom',in:iv,out:ov,hrs});closeShiftModal();renderAll();}
+function closeShiftModal(){$('shift-modal').classList.add('hidden');editingShift=null;}
+
+/* ---- EMPLOYEE MODAL ---- */
+function fillRoles(sel,val){sel.innerHTML=HS.ALL_ROLES.map(r=>`<option ${r===val?'selected':''}>${r}</option>`).join('');}
+function buildAvail(){const c=$('avail-fields');c.innerHTML='';HS.DAYS.forEach((d,i)=>{const cell=document.createElement('div');cell.className='avail-day '+(availDraft[i]===0?'unavail':availDraft[i]===2?'pref':'avail');cell.style.cursor='pointer';cell.innerHTML=`<div class="avail-day-label">${d}</div><div class="avail-day-val">${availDraft[i]===0?'✕':availDraft[i]===2?'◐':'✓'}</div>`;cell.onclick=()=>{availDraft[i]=(availDraft[i]+1)%3;buildAvail();};c.appendChild(cell);});}
+function openAddEmployee(){editingEmpId=null;availDraft=[1,1,1,1,1,1,1];$('emp-modal-title').textContent='Add person';$('emp-save-btn').textContent='Add person';$('emp-delete-btn').classList.add('hidden');$('emp-fname').value='';$('emp-lname').value='';fillRoles($('emp-role'),'Budtender');$('emp-type').value='FT';$('emp-cap').value=0;$('emp-ot').value='no';$('emp-key').value='no';$('emp-notes').value='';buildAvail();$('emp-modal').classList.remove('hidden');}
+function openEditEmployee(id){const e=HS.empById(id);editingEmpId=id;availDraft=[...(e.avail||[1,1,1,1,1,1,1])];$('emp-modal-title').textContent='Edit person';$('emp-save-btn').textContent='Save';$('emp-delete-btn').classList.remove('hidden');const parts=e.name.split(' ');$('emp-fname').value=parts[0]||'';$('emp-lname').value=parts.slice(1).join(' ');fillRoles($('emp-role'),e.role);$('emp-type').value=e.type;$('emp-cap').value=e.cap||0;$('emp-ot').value=e.ot;$('emp-key').value=e.key;$('emp-notes').value=e.notes||'';buildAvail();$('emp-modal').classList.remove('hidden');}
+function closeEmpModal(){$('emp-modal').classList.add('hidden');editingEmpId=null;}
+function saveEmployee(){
+  const data={name:`${$('emp-fname').value.trim()} ${$('emp-lname').value.trim()}`.trim(),role:$('emp-role').value,type:$('emp-type').value,cap:parseInt($('emp-cap').value)||0,ot:$('emp-ot').value,key:$('emp-key').value,avail:[...availDraft],notes:$('emp-notes').value.trim()};
+  if(!data.name){alert('Name required');return;}
+  if(editingEmpId){const e=HS.empById(editingEmpId);HS.updateEmployee(editingEmpId,{...data,rules:e.rules||{}});}
+  else HS.addEmployee(data);
+  closeEmpModal();renderAll();
+}
+function deleteEmployee(){if(!confirm('Remove this person from the roster?'))return;HS.removeEmployee(editingEmpId);closeEmpModal();renderAll();}
+
+/* ---- REQUEST MODAL ---- */
+function openAddRequest(){const sel=$('req-emp');sel.innerHTML=HS.state.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');$('req-dates').value='';$('req-detail').value='';$('req-type').value='off';$('req-modal').classList.remove('hidden');}
+function closeReqModal(){$('req-modal').classList.add('hidden');}
+function saveRequest(){const eid=parseInt($('req-emp').value),emp=HS.empById(eid);HS.state.requests.push({empId:eid,empName:emp.name,type:$('req-type').value,dates:$('req-dates').value.trim(),detail:$('req-detail').value.trim()});HS.save();closeReqModal();renderAll();}
+function removeRequest(i){HS.state.requests.splice(i,1);HS.save();renderAll();}
+
+/* ---- CONTEXT MENU ---- */
+function showCtxMenu(x,y,emp){
+  removeCtxMenu();const menu=document.createElement('div');menu.className='ctx-menu';menu.id='ctx-menu';
+  menu.innerHTML=`<div class="ctx-label">${emp.name.split(' ')[0]} · change role</div>`;
+  HS.ALL_ROLES.forEach(role=>{const grp=HS.getRoleGroup(role),pip=grp?`<span style="width:7px;height:7px;border-radius:50%;background:${grp.color};display:inline-block"></span>`:'';const item=document.createElement('div');item.className='ctx-item';item.innerHTML=`${pip} ${role} ${emp.role===role?'✓':''}`;item.onclick=()=>{HS.updateEmployee(emp.id,{role});removeCtxMenu();renderAll();};menu.appendChild(item);});
+  menu.innerHTML+=`<div class="ctx-divider"></div>`;
+  const up=document.createElement('div');up.className='ctx-item';up.textContent='↑ Move up';up.onclick=()=>{HS.moveEmployee(emp.id,-1);removeCtxMenu();renderAll();};
+  const dn=document.createElement('div');dn.className='ctx-item';dn.textContent='↓ Move down';dn.onclick=()=>{HS.moveEmployee(emp.id,1);removeCtxMenu();renderAll();};
+  const ed=document.createElement('div');ed.className='ctx-item';ed.textContent='✎ Edit person';ed.onclick=()=>{removeCtxMenu();openEditEmployee(emp.id);};
+  menu.appendChild(up);menu.appendChild(dn);menu.appendChild(ed);
+  menu.style.left=Math.min(x,innerWidth-200)+'px';menu.style.top=Math.min(y,innerHeight-360)+'px';
+  document.body.appendChild(menu);setTimeout(()=>document.addEventListener('click',removeCtxMenu,{once:true}),10);
+}
+function removeCtxMenu(){const m=$('ctx-menu');if(m)m.remove();}
+
+/* ---- SYNC ---- */
+function doDownload(){const blob=new Blob([HS.exportBackup()],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`honeystash-backup-${HS.state.currentWeek}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function doCopyJSON(btn){navigator.clipboard?.writeText(HS.exportBackup()).then(()=>flash(btn,'✓ Copied!'));}
+function pasteImport(){const txt=prompt('Paste backup text:');if(!txt)return;try{HS.importBackup(txt);$('weekStart').value=HS.state.currentWeek;updateWeekLabel();renderAll();alert('Loaded.');}catch(e){alert(e.message);}}
+$('import-file').addEventListener('change',function(){const f=this.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{HS.importBackup(r.result);$('weekStart').value=HS.state.currentWeek;updateWeekLabel();renderAll();alert('Loaded backup.');}catch(e){alert(e.message);}this.value='';};r.readAsText(f);});
+
+/* ---- TABS ---- */
+function switchTab(tab,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));el.classList.add('active');$(`tab-${tab}`).classList.remove('hidden');if(tab==='export')renderExport();if(tab==='daily')renderDaily();}
+
+/* close modals on overlay click */
+['shift-modal','emp-modal','req-modal'].forEach(id=>$(id).addEventListener('click',function(e){if(e.target===this)this.classList.add('hidden');}));
+
+function renderAll(){renderSchedule();renderRoster();renderRequests();if(!$('tab-daily').classList.contains('hidden'))renderDaily();if(!$('tab-export').classList.contains('hidden'))renderExport();}
+
+/* react to changes from the phone page (same device) */
+HS.onChange(()=>{$('weekStart').value=HS.state.currentWeek;updateWeekLabel();renderAll();});
+
+/* PWA */
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+
+$('weekStart').value=HS.state.currentWeek;updateWeekLabel();renderAll();
+</script>
+</body>
+</html>
