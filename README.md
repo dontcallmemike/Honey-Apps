@@ -2,25 +2,22 @@
 
 Two pages, one shared brain:
 
-- **index.html** — full scheduler (desktop). Week grid, daily coverage + auto breaks, roster, requests, Google Sheets export, and a Sync tab.
-- **quick.html** — phone quick-edit. One day at a time, big tap targets, swipe between days, live coverage chips. Tap a person to set their shift.
-- **hs-core.js** — the shared data model, shift definitions, constraint engine, break rules, and storage. Edit rules here once; both pages update.
+- **index.html** — full scheduler (desktop). Week grid, daily coverage + auto breaks, roster, requests, Google Sheets export, Sync tab.
+- **quick.html** — phone quick-edit. One day at a time, big tap targets, swipe between days, live coverage chips.
+- **hs-core.js** — shared data model, shift definitions, constraint engine, break rules, storage, and the export template map.
 
-Both pages share data automatically on the **same device/browser**. To move data **between devices**, use the **Sync** tab: Download backup on one, load it on the other. (Hooks are in place to add live cloud sync later without a rewrite.)
+Same device = data shared automatically. Between devices = Sync tab (download backup, load on the other). Live sync can be added later via the SYNC hook without a rewrite.
+
+## Export matches your sheet template
+The export lays each person onto their exact template row and pastes at **A8**. Shifts fill the In/Out columns as `h:mm AM/PM` times; the sheet's hours column (R) recalculates itself and is never overwritten. Anyone in the app who isn't on the template is appended in a clearly labeled block so a paste never shifts rows. If the app roster and the sheet drift apart, the Export tab tells you who's missing on each side.
+
+Template row map lives in `hs-core.js` (TEMPLATE_ROWS). Update it there if the sheet layout changes.
+
+## July 2026 roster
+Daniel Girod → Supervisor. Added PT budtenders: Ada Marin, Luis Morales, Lukas Graves, Stephanie Cruz. Francis Barber → inventory supervisor (still keyholder). Gabbie Domian mapped to the ASM row.
 
 ## Install on iPhone
 Open the GitHub Pages URL in Safari → Share → Add to Home Screen. Works offline after first load.
 
-## Deploy
-Push these files to the repo root (keep `.nojekyll`). GitHub Pages serves them as-is.
-
-## Built-in staff constraints (enforced, not just notes)
-- Bailey — 32 hr cap, off Tue/Thu, no Monday close
-- Daniel — no opens (mids/closes only)
-- Rene — must end by 5 PM
-- Kiki — no close Tue/Thu
-- Rye — starts no earlier than 4 PM
-- Tim — closes only
-- Shakai — starts no earlier than 6 PM
-
-Edit any person in the Roster tab. New hires: **+ Add person**.
+## Enforced staff constraints
+Bailey (32hr cap, off Tue/Thu, no Mon close), Daniel (no opens), Rene (end by 5 PM), Kiki (no close Tue/Thu), Rye (from 4 PM), Tim (closes only), Shakai (from 6 PM). Edit anyone in the Roster tab.

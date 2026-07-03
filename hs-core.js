@@ -56,10 +56,10 @@ const HS = (function () {
     { label: 'Management',  color: '#64d4f5', roles: ['Store Manager', 'Manager - Inventory', 'Assistant Store Manager'] },
     { label: 'Supervisors', color: '#c8f564', roles: ['Supervisor'] },
     { label: 'Budtenders',  color: '#f5a524', roles: ['Budtender', 'Budtender - PT'] },
-    { label: 'Inventory',   color: '#b47ef5', roles: ['inventory lead', 'inventory', 'inventory - PT'] },
+    { label: 'Inventory',   color: '#b47ef5', roles: ['inventory supervisor', 'inventory lead', 'inventory', 'inventory - PT'] },
   ];
   const ALL_ROLES = ['Store Manager', 'Manager - Inventory', 'Assistant Store Manager',
-    'Supervisor', 'Budtender', 'Budtender - PT', 'inventory lead', 'inventory', 'inventory - PT'];
+    'Supervisor', 'Budtender', 'Budtender - PT', 'inventory supervisor', 'inventory lead', 'inventory', 'inventory - PT'];
 
   /* ---- DEFAULT ROSTER -----------------------------------------------------*/
   /* Ryan & Derrick removed. Mike V kept, keyholder = no.
@@ -72,14 +72,18 @@ const HS = (function () {
     { id: 4,  name: 'Michael Sheehan', role: 'Supervisor',             type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
     { id: 5,  name: 'Patrick Hogan',   role: 'Supervisor',             type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
     { id: 6,  name: 'Alex Wang',       role: 'Supervisor',             type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
+    { id: 8,  name: 'Daniel Girod',    role: 'Supervisor',             type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: 'Mids and closes only for now (no opens).', rules: { noOpen: true } },
     { id: 7,  name: 'Bailey Shandolow',role: 'Budtender',              type: 'FT', cap: 32, ot: 'no',  key: 'no',  avail: [1,0,1,0,1,1,1], notes: 'Capped 32 hrs. Unavailable Tue/Thu. No closing Mondays.', rules: { noClose: [0], maxHours: 32 } },
-    { id: 8,  name: 'Daniel Girod',    role: 'Budtender',              type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: 'Mids and closes only for now (no opens).', rules: { noOpen: true } },
     { id: 9,  name: 'Rene Flynn',      role: 'Budtender',              type: 'FT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: 'Mornings only. Must end by 5:00 PM.', rules: { latestEnd: '17:00' } },
     { id: 11, name: 'Michael Vasquez', role: 'Budtender',              type: 'FT', cap: 0,  ot: 'yes', key: 'no',  avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
     { id: 12, name: 'Kiki Washington', role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: 'Cannot close Tue or Thu. Prefers daytime.', rules: { noClose: [1,3] } },
     { id: 13, name: 'Rye Deangelo',    role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [0,1,1,1,1,1,0], notes: 'Available Tue–Sat from 4 PM.', rules: { earliestStart: '16:00' } },
     { id: 14, name: 'Tim Hayes',       role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [0,1,1,1,1,1,0], notes: 'Available Tue–Sat, closes only.', rules: { closesOnly: true } },
-    { id: 15, name: 'Francis Barber',  role: 'inventory lead',         type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
+    { id: 19, name: 'Ada Marin',       role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
+    { id: 20, name: 'Luis Morales',    role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
+    { id: 21, name: 'Lukas Graves',    role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
+    { id: 22, name: 'Stephanie Cruz',  role: 'Budtender - PT',         type: 'PT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
+    { id: 15, name: 'Francis Barber',  role: 'inventory supervisor',   type: 'FT', cap: 0,  ot: 'yes', key: 'yes', avail: [1,1,1,1,1,1,1], notes: '', rules: {} },
     { id: 16, name: 'Shakai Stepney',  role: 'inventory',              type: 'FT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: 'Works 6 PM–12 AM.', rules: { earliestStart: '18:00' } },
     { id: 18, name: 'Logan Martin',    role: 'inventory',              type: 'FT', cap: 0,  ot: 'no',  key: 'no',  avail: [1,1,1,1,1,1,1], notes: 'Full time as of June 2026.', rules: {} },
   ];
@@ -333,33 +337,93 @@ const HS = (function () {
   }
 
   /* ---- EXPORT (Google Sheets, paste at A8) -------------------------------*/
+  /* The live sheet is a FIXED-ROW template. Each person owns a specific row;
+     shifts are two cells (In col, Out col) as h:mm AM/PM times; column R holds
+     an hours FORMULA the sheet owns — export must never write it.
+
+     Layout, data starting at row 8 (so first output line = A8):
+       A = name, B = role,
+       C/D Mon · E/F Tue · G/H Wed · I/J Thu · K/L Fri · M/N Sat · O/P Sun.
+     Blank template rows (ASM slot, spares, separators) are reproduced so every
+     person lands on their real row. TEMPLATE_ROWS is the single source of that
+     layout — edit it here if the sheet template ever changes.
+
+     Matching is by NAME against the app roster. If someone in the app isn't in
+     the template, they're appended in a clearly separated "unmapped" block so a
+     paste never silently shifts everyone down.                                */
+  const TEMPLATE_ROWS = [
+    { row: 8,  name: 'Alisson Jensen',   role: 'Store Manager' },
+    { row: 9,  name: 'Sam Reichbart',    role: 'Manager - Inventory' },
+    { row: 10, name: 'Gabbie Domian',   role: 'Assistant Store Manager' },
+    { row: 11, name: null,               role: null },
+    { row: 12, name: null,               role: null },
+    { row: 13, name: 'Michael Sheehan',  role: 'Supervisor' },
+    { row: 14, name: 'Patrick Hogan',    role: 'Supervisor' },
+    { row: 15, name: 'Alex Wang',        role: 'Supervisor' },
+    { row: 16, name: 'Daniel Girod',     role: 'Supervisor' },
+    { row: 17, name: null,               role: 'Supervisor' },
+    { row: 18, name: null,               role: 'Supervisor' },
+    { row: 19, name: null,               role: null },
+    { row: 20, name: 'Bailey Shandolow', role: 'Budtender' },
+    { row: 21, name: 'Rene Flynn',       role: 'Budtender' },
+    { row: 22, name: 'Michael Vasquez',  role: 'Budtender' },
+    { row: 23, name: 'Kiki Washington',  role: 'Budtender - PT' },
+    { row: 24, name: 'Rye Deangelo',     role: 'Budtender - PT' },
+    { row: 25, name: 'Tim Hayes',        role: 'Budtender - PT' },
+    { row: 26, name: 'Ada Marin',        role: 'Budtender - PT' },
+    { row: 27, name: 'Luis Morales',     role: 'Budtender - PT' },
+    { row: 28, name: 'Lukas Graves',     role: 'Budtender - PT' },
+    { row: 29, name: 'Stephanie Cruz',   role: 'Budtender - PT' },
+    { row: 30, name: null,               role: null },
+    { row: 31, name: 'Francis Barber',   role: 'inventory supervisor' },
+    { row: 32, name: 'Shakai Stepney',   role: 'inventory' },
+    { row: 33, name: 'Logan Martin',     role: 'inventory' },
+  ];
+  const EXPORT_START_ROW = 8;
+
+  function normName(s) { return (s || '').trim().toLowerCase(); }
+
+  /* one 16-column line: name, role, then 7×(In,Out). No hours column (R). */
+  function buildTemplateLine(emp, wk, nameOverride, roleOverride) {
+    const cols = [nameOverride ?? (emp ? emp.name : ''), roleOverride ?? (emp ? emp.role : '')];
+    for (let d = 0; d < 7; d++) {
+      if (emp) { const t = getShiftTimes(getEmpShift(wk, emp.id, d)); cols.push(t.in, t.out); }
+      else cols.push('', '');
+    }
+    return cols.join('\t');
+  }
   function getShiftTimes(s) {
     if (!s || s.type === 'off') return { in: '', out: '' };
     return { in: toSheetTime(shiftIn(s)), out: toSheetTime(shiftOut(s)) };
   }
-  function buildRow(emp, wk, note) {
-    const cols = [emp.name, emp.role];
-    for (let d = 0; d < 7; d++) { const t = getShiftTimes(getEmpShift(wk, emp.id, d)); cols.push(t.in, t.out); }
-    const hrs = getEmpWeekHours(wk, emp.id);
-    cols.push('', hrs > 0 ? hrs.toFixed(2) : '0.00');
-    if (note) cols.push(note.replace(/[\r\n]+/g, ' ').trim());
-    return cols.join('\t');
-  }
+
   function buildExport(wk) {
-    const lines = [];
-    const GROUPS = [
-      { filter: e => ['Store Manager', 'Manager - Inventory', 'Assistant Store Manager'].includes(e.role), pad: 3 },
-      { filter: e => e.role === 'Supervisor', pad: 5 },
-      { filter: e => isBudtender(e), pad: 0, trailingBlanks: 3 },
-      { filter: e => isInventory(e), pad: 0 },
-    ];
-    GROUPS.forEach((grp, gi) => {
-      const emps = state.employees.filter(grp.filter);
-      emps.forEach(e => lines.push(buildRow(e, wk, e.notes ? e.notes.split('.')[0] : '')));
-      if (grp.pad > 0) for (let i = emps.length; i < grp.pad; i++) lines.push('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t');
-      if (gi < GROUPS.length - 1) { const b = grp.trailingBlanks || 1; for (let k = 0; k < b; k++) lines.push(''); }
+    const byName = {};
+    state.employees.forEach(e => { byName[normName(e.name)] = e; });
+    const used = new Set();
+    const lines = TEMPLATE_ROWS.map(tr => {
+      if (!tr.name) return buildTemplateLine(null, wk, '', tr.role || '');
+      const emp = byName[normName(tr.name)];
+      if (emp) used.add(emp.id);
+      return buildTemplateLine(emp || null, wk, tr.name, tr.role || (emp ? emp.role : ''));
     });
+    /* anyone in the app not on the template — append, clearly separated */
+    const extra = state.employees.filter(e => isFloorStaff(e) && !used.has(e.id));
+    if (extra.length) {
+      lines.push('');
+      lines.push('NOT ON TEMPLATE — add a row in the sheet, then move these up:\t');
+      extra.forEach(e => lines.push(buildTemplateLine(e, wk)));
+    }
     return lines.join('\n');
+  }
+
+  /* how many template people are missing from the current roster (for a hint) */
+  function exportRosterDiff() {
+    const names = new Set(state.employees.map(e => normName(e.name)));
+    const missing = TEMPLATE_ROWS.filter(t => t.name && !names.has(normName(t.name))).map(t => t.name);
+    const appNames = new Set(TEMPLATE_ROWS.filter(t => t.name).map(t => normName(t.name)));
+    const extra = state.employees.filter(e => isFloorStaff(e) && !appNames.has(normName(e.name))).map(e => e.name);
+    return { missing, extra, startRow: EXPORT_START_ROW };
   }
 
   /* ---- ROSTER MUTATIONS ---------------------------------------------------*/
@@ -427,7 +491,7 @@ const HS = (function () {
     getShiftHours, getBreakInfo,
     getEmpShift, setEmpShift, getEmpWeekHours, empById,
     hasRequestOff, checkAssignment, detectConflicts, scheduleDayBreaks,
-    buildExport, addEmployee, updateEmployee, removeEmployee, moveEmployee,
+    buildExport, exportRosterDiff, addEmployee, updateEmployee, removeEmployee, moveEmployee,
     reorderEmployee, setWeek, exportBackup, importBackup, SYNC,
   };
 })();

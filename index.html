@@ -252,8 +252,9 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;text-tra
 
     <!-- EXPORT -->
     <div id="tab-export" class="hidden">
-      <div class="card-header"><div class="card-title">Google Sheets export</div><button class="btn btn-accent btn-sm" id="copy-btn" onclick="copyExport(this)">Copy to clipboard</button></div>
-      <div class="export-note">Copy → open your weekly sheet tab → click cell <strong>A8</strong> → paste. Don't paste into the template copy.</div>
+      <div class="card-header"><div><div class="card-title">Google Sheets export</div><div class="card-sub">Lays out on your template's exact rows. Column R (hours) is left alone — the sheet calculates it.</div></div><button class="btn btn-accent btn-sm" id="copy-btn" onclick="copyExport(this)">Copy to clipboard</button></div>
+      <div class="export-note">Open the correct week tab → click cell <strong>A8</strong> → paste. Times land in the In/Out columns and hours recalc themselves.</div>
+      <div id="export-diff"></div>
       <div class="export-box" id="export-box"></div>
     </div>
 
@@ -464,7 +465,14 @@ function renderRequests(){
 }
 
 /* ---- EXPORT ---- */
-function renderExport(){$('export-box').textContent=HS.buildExport(HS.state.currentWeek);}
+function renderExport(){
+  $('export-box').textContent=HS.buildExport(HS.state.currentWeek);
+  const diff=HS.exportRosterDiff();const box=$('export-diff');
+  let html='';
+  if(diff.extra.length)html+=`<div class="alert alert-warn"><span class="alert-icon">＋</span><span><strong>Not on the sheet template:</strong> ${diff.extra.join(', ')}. They're added at the bottom of the export under a labeled row — insert a row for them in the sheet, or tell me their row and I'll map it.</span></div>`;
+  if(diff.missing.length)html+=`<div class="alert alert-warn"><span class="alert-icon">?</span><span><strong>On the template but not in the roster:</strong> ${diff.missing.join(', ')}. Their rows export blank. Add them in Roster if they're back.</span></div>`;
+  box.innerHTML=html;
+}
 function copyExport(btn){const txt=HS.buildExport(HS.state.currentWeek);navigator.clipboard?.writeText(txt).then(()=>flash(btn,'✓ Copied!')).catch(()=>flash(btn,'Press Ctrl+C'));}
 function flash(btn,msg){const o=btn.textContent;btn.textContent=msg;btn.style.background='var(--ok)';setTimeout(()=>{btn.textContent=o;btn.style.background='';},1800);}
 
