@@ -1049,5 +1049,74 @@ function copyExport(btn){
 updateWeekLabel();
 renderAll();
 </script>
+<div id="backup-sync-card" style="margin-top: 20px; padding: 16px; border: 1px solid rgb(51, 51, 51); border-radius: 8px; background: rgb(21, 24, 31); color: rgb(221, 221, 221);">
+  <div style="font-weight:bold;margin-bottom:8px;">Backup &amp; Sync (move data between devices)</div>
+  <div style="margin-bottom:10px;opacity:0.8;">Use this to move your schedule data between your phone and computer. Download a backup file on one device, then load it on the other.</div>
+  <button id="backup-download-btn">⇩ Download Backup (JSON)</button>
+  <button id="backup-load-btn">↑ Load Backup</button>
+  <input type="file" id="backup-file-input" accept="application/json" style="display:none;">
+  <div id="backup-status" style="margin-top:10px;opacity:0.85;">Backup downloaded.</div>
+</div>
+<script id="backup-sync-script">
+(function(){
+  var dlBtn = document.getElementById('backup-download-btn');
+  var loadBtn = document.getElementById('backup-load-btn');
+  var fileInput = document.getElementById('backup-file-input');
+  var status = document.getElementById('backup-status');
+  var KEYS = ['hs_employees','hs_schedules','hs_requests','hs_week'];
+
+  dlBtn.addEventListener('click', function(){
+    try {
+      var data = {
+        employees: localStorage.getItem('hs_employees'),
+        schedules: localStorage.getItem('hs_schedules'),
+        requests: localStorage.getItem('hs_requests'),
+        week: localStorage.getItem('hs_week')
+      };
+      var blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      var stamp = new Date().toISOString().slice(0,10);
+      a.href = url;
+      a.download = 'honeystash_backup_' + stamp + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      status.textContent = 'Backup downloaded.';
+    } catch(e) {
+      status.textContent = 'Error creating backup: ' + e.message;
+    }
+  });
+
+  loadBtn.addEventListener('click', function(){
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', function(){
+    var file = fileInput.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        var parsed = JSON.parse(e.target.result);
+        if (!parsed || typeof parsed.employees === 'undefined' || typeof parsed.schedules === 'undefined' || typeof parsed.requests === 'undefined' || typeof parsed.week === 'undefined') {
+          status.textContent = 'Error loading backup: Missing expected fields';
+          return;
+        }
+        localStorage.setItem('hs_employees', parsed.employees);
+        localStorage.setItem('hs_schedules', parsed.schedules);
+        localStorage.setItem('hs_requests', parsed.requests);
+        localStorage.setItem('hs_week', parsed.week);
+        status.textContent = 'Backup loaded. Reloading...';
+        setTimeout(function(){ location.reload(); }, 500);
+      } catch(err) {
+        status.textContent = 'Error loading backup: ' + err.message;
+      }
+    };
+    reader.readAsText(file);
+  });
+})();
+</script>
 </body>
 </html>
