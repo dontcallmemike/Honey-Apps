@@ -657,6 +657,7 @@ function renderSchedule(){
     grid.appendChild(h);
   });
   const staff=employees.filter(e=>isFloorStaff(e));
+  staff.sort((a,b)=>{const ga=ROLE_GROUPS.findIndex(g=>g.roles.some(r=>a.role.toLowerCase().includes(r.toLowerCase())));const gb=ROLE_GROUPS.findIndex(g=>g.roles.some(r=>b.role.toLowerCase().includes(r.toLowerCase())));return(ga===-1?ROLE_GROUPS.length:ga)-(gb===-1?ROLE_GROUPS.length:gb);});
   let lastGrp=null;
   staff.forEach(emp=>{
     const grp=getRoleGroup(emp.role),gl=grp?grp.label:'Other',gc=grp?grp.color:'var(--text3)';
@@ -971,7 +972,7 @@ function showCtxMenu(x,y,emp){
     item.onclick=()=>{emp.role=role;save();removeCtxMenu();renderAll();};
     menu.appendChild(item);
   });
-  menu.innerHTML+=`<div class="ctx-divider"></div>`;
+  const ctxDiv2=document.createElement('div');ctxDiv2.className='ctx-divider';menu.appendChild(ctxDiv2);
   const up=document.createElement('div');up.className='ctx-item';up.textContent='↑ Move Up';
   up.onclick=()=>{const i=employees.findIndex(e=>e.id===emp.id);if(i>0){[employees[i-1],employees[i]]=[employees[i],employees[i-1]];save();renderAll();}removeCtxMenu();};
   const dn=document.createElement('div');dn.className='ctx-item';dn.textContent='↓ Move Down';
@@ -992,6 +993,9 @@ function switchTab(tab,el){
   document.getElementById(`tab-${tab}`).classList.remove('hidden');
   if(tab==='export')renderExport();
   if(tab==='daily')renderDaily();
+  if(tab==='schedule')renderSchedule();
+  if(tab==='roster')renderRoster();
+  if(tab==='requests')renderRequests();
 }
 
 // ── WEEK SELECTOR ─────────────────────────────────────────────────────────────
