@@ -452,7 +452,7 @@ const ROLE_GROUPS = [
   {label:'Management', color:'#64d4f5', roles:['Store Manager','Manager - Inventory','Assistant Store Manager']},
   {label:'Supervisors',color:'#c8f564', roles:['Supervisor']},
   {label:'Budtenders', color:'#f5a524', roles:['Budtender','Budtender - PT']},
-  {label:'Inventory',  color:'#b47ef5', roles:['inventory lead','inventory','inventory - PT']},
+  {label:'Inventory',  color:'#b47ef5', roles:['inventory lead','inventory','inventory - PT','inventory supervisor']},
 ];
 
 const ALL_ROLES = ['Store Manager','Manager - Inventory','Assistant Store Manager','Supervisor','Budtender','Budtender - PT','inventory supervisor','inventory lead','inventory','inventory - PT'];
@@ -552,7 +552,7 @@ function isFloorStaff(emp){
   if(emp.floorStaff===false)return false;
   return emp.role.toLowerCase().includes('budtender')||emp.role.toLowerCase().includes('inventory')||isSupervisor(emp);
 }
-function getRoleGroup(role){return ROLE_GROUPS.find(g=>g.roles.some(r=>role.toLowerCase().includes(r.toLowerCase())));}
+function getRoleGroup(role){return ROLE_GROUPS.find(g=>g.roles.some(r=>role.toLowerCase()===r.toLowerCase()));}
 
 function hasRequestOff(eid,d){
   const day=addDays(currentWeek,d);
@@ -657,7 +657,7 @@ function renderSchedule(){
     grid.appendChild(h);
   });
   const staff=employees.filter(e=>isFloorStaff(e));
-  staff.sort((a,b)=>{const ga=ROLE_GROUPS.findIndex(g=>g.roles.some(r=>a.role.toLowerCase().includes(r.toLowerCase())));const gb=ROLE_GROUPS.findIndex(g=>g.roles.some(r=>b.role.toLowerCase().includes(r.toLowerCase())));return(ga===-1?ROLE_GROUPS.length:ga)-(gb===-1?ROLE_GROUPS.length:gb);});
+  staff.sort((a,b)=>{const ga=ROLE_GROUPS.findIndex(g=>g.roles.some(r=>a.role.toLowerCase()===r.toLowerCase()));const gb=ROLE_GROUPS.findIndex(g=>g.roles.some(r=>b.role.toLowerCase()===r.toLowerCase()));return(ga===-1?ROLE_GROUPS.length:ga)-(gb===-1?ROLE_GROUPS.length:gb);});
   let lastGrp=null;
   staff.forEach(emp=>{
     const grp=getRoleGroup(emp.role),gl=grp?grp.label:'Other',gc=grp?grp.color:'var(--text3)';
