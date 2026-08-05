@@ -322,19 +322,17 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;text-tra
         <label>Shift Type</label>
         <select id="shift-type-sel">
           <option value="off">Off</option>
-          <option value="open">Open — 7:30 AM – 4:00 PM</option>
-          <option value="open2">Open — 7:45 AM – 4:00 PM</option>
-          <option value="opensup">Open Support — 9:00 AM – 5:00 PM</option>
-          <option value="opensup2">Open Support — 10:00 AM – 6:00 PM</option>
-          <option value="mid">Mid — 11:00 AM – 7:00 PM</option>
-          <option value="mid2">Mid — 12:00 PM – 8:00 PM</option>
-          <option value="latemid">Late Mid — 12:00 PM – 10:00 PM</option>
-          <option value="sam1">Sam 10hr — 11:00 AM – 9:00 PM</option>
-          <option value="sam2">Sam 10hr — 12:00 PM – 10:00 PM</option>
-          <option value="close">Close — 4:00 PM – 12:15 AM</option>
-          <option value="closesup">Sup Close — 4:00 PM – 12:30 AM</option>
-          <option value="latenight">Late Night — 6:00 PM – 2:15 AM</option>
-          <option value="latenightsup">Sup Late Night — 6:00 PM – 2:30 AM</option>
+                    <option value="supopen">Sup Open — 8:30 AM – 4:00 PM</option>
+                    <option value="open">Open — 8:45 AM – 4:00 PM</option>
+                    <option value="opensup">Open Support — 9:00 AM – 5:00 PM</option>
+                    <option value="mid">Mid — 11:00 AM – 7:00 PM</option>
+                    <option value="mid2">Mid — 12:00 PM – 8:00 PM</option>
+                    <option value="close">Close — 2:00 PM – 10:15 PM</option>
+                    <option value="closesup">Sup Close — 2:00 PM – 10:30 PM</option>
+                    <option value="sam1">Sam Shift — 11:00 AM – 9:00 PM</option>
+                    <option value="sam2">Sam Close — 12:00 PM – 10:00 PM</option>
+                    <option value="alissonlate">Alisson Late — 1:00 PM – 9:00 PM</option>
+                    <option value="alissonearly">Alisson Early — 8:30 AM – 5:00 PM</option>
           <option value="custom">Custom...</option>
         </select>
       </div>
@@ -421,30 +419,28 @@ const DAY_LABELS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday
 
 const SHIFT_DEFS = {
   off:         {label:'Off',           in:null,    out:null,    hrs:0},
-  open:        {label:'7:30–4:00',     in:'07:30', out:'16:00', hrs:8.5},
-  open2:       {label:'7:45–4:00',     in:'07:45', out:'16:00', hrs:8.25},
-  opensup:     {label:'9:00–5:00',     in:'09:00', out:'17:00', hrs:8},
-  opensup2:    {label:'10:00–6:00',    in:'10:00', out:'18:00', hrs:8},
-  mid:         {label:'11:00–7:00',    in:'11:00', out:'19:00', hrs:8},
-  mid2:        {label:'12:00–8:00',    in:'12:00', out:'20:00', hrs:8},
-  latemid:     {label:'12:00–10:00',   in:'12:00', out:'22:00', hrs:10},
-  sam1:        {label:'11:00–9:00',    in:'11:00', out:'21:00', hrs:10},
-  sam2:        {label:'12:00–10:00',   in:'12:00', out:'22:00', hrs:10},
-  close:       {label:'4:00–12:15',    in:'16:00', out:'00:15', hrs:8.25},
-  closesup:    {label:'4:00–12:30',    in:'16:00', out:'00:30', hrs:8.5},
-  latenight:   {label:'6:00–2:15',     in:'18:00', out:'02:15', hrs:8.25},
-  latenightsup:{label:'6:00–2:30',     in:'18:00', out:'02:30', hrs:8.5},
+  supopen:      {label:'8:30-4:00',    in:'08:30', out:'16:00', hrs:7.5},
+      open:         {label:'8:45-4:00',    in:'08:45', out:'16:00', hrs:7.25},
+      opensup:      {label:'9:00-5:00',    in:'09:00', out:'17:00', hrs:8},
+      mid:          {label:'11:00-7:00',   in:'11:00', out:'19:00', hrs:8},
+      mid2:         {label:'12:00-8:00',   in:'12:00', out:'20:00', hrs:8},
+      close:        {label:'2:00-10:15',   in:'14:00', out:'22:15', hrs:8.25},
+      closesup:     {label:'2:00-10:30',   in:'14:00', out:'22:30', hrs:8.5},
+      sam1:         {label:'11:00-9:00',   in:'11:00', out:'21:00', hrs:10},
+      sam2:         {label:'12:00-10:00',  in:'12:00', out:'22:00', hrs:10},
+      alissonlate:  {label:'1:00-9:00',    in:'13:00', out:'21:00', hrs:8},
+      alissonearly: {label:'8:30-5:00',    in:'08:30', out:'17:00', hrs:8.5},
   custom:      {label:'Custom',        in:null,    out:null,    hrs:0},
 };
 
 const SHIFT_CLASS = {
   off:'sp-off',
-  open:'sp-open', open2:'sp-open',
-  opensup:'sp-opensup', opensup2:'sp-opensup',
-  mid:'sp-mid', mid2:'sp-mid',
-  latemid:'sp-latemid', sam1:'sp-latemid', sam2:'sp-latemid',
-  close:'sp-close', closesup:'sp-close',
-  latenight:'sp-close', latenightsup:'sp-close',
+  supopen:'sp-open', open:'sp-open',
+      opensup:'sp-opensup',
+      mid:'sp-mid', mid2:'sp-mid',
+      close:'sp-close', closesup:'sp-close',
+      sam1:'sp-latemid', sam2:'sp-latemid',
+      alissonlate:'sp-mid', alissonearly:'sp-open',
   custom:'sp-mid'
 };
 
@@ -456,9 +452,9 @@ const ROLE_GROUPS = [
 ];
 
 const ALL_ROLES = ['Store Manager','Manager - Inventory','Assistant Store Manager','Supervisor','Budtender','Budtender - PT','inventory supervisor','inventory lead','inventory','inventory - PT'];
-const OPEN_TYPES  = ['open','open2','opensup','opensup2'];
-const CLOSE_TYPES = ['close','closesup'];
-const EARLY_TYPES = ['open','open2','opensup','opensup2','mid','mid2'];
+const OPEN_TYPES  = ['supopen','open','opensup','alissonearly'];
+      const CLOSE_TYPES = ['close','closesup'];
+      const EARLY_TYPES = ['supopen','open','opensup','alissonearly','mid','mid2'];
 
 const DEFAULT_EMPLOYEES = [
   // Management
@@ -634,8 +630,8 @@ function detectConflicts(wk){
     if(keys.length===0&&floor.length>0)errors.push({name:dl,msg:'No keyholder scheduled'});
     if(buds.length===1)warnings.push({name:dl,msg:'Only 1 budtender/supervisor on floor'});
     else if(buds.length===0&&floor.length>0)errors.push({name:dl,msg:'No budtenders scheduled'});
-    const hasOpener=floor.some(e=>shiftCoversHour(getEmpShift(wk,e.id,d),8));
-    if(!hasOpener&&floor.length>0)warnings.push({name:dl,msg:'No one covers 8am open'});
+    const hasOpener=floor.some(e=>{const s=getEmpShift(wk,e.id,d);if(!s||s.type==='off')return false;const def=SHIFT_DEFS[s.type]||s;return timeToMins(s.in||def.in||'23:59')<=510;});
+          if(!hasOpener&&floor.length>0)warnings.push({name:dl,msg:'No one covers 8:30am open'});
     const hasCloser=floor.some(e=>shiftCoversHour(getEmpShift(wk,e.id,d),22));
     if(hasCloser){
       const keyClose=keys.some(e=>shiftCoversHour(getEmpShift(wk,e.id,d),22));
