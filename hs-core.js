@@ -21,26 +21,24 @@ const HS = (function () {
      open/close/late classification used by the constraint engine.            */
   const SHIFT_DEFS = {
     off:        { label: 'Off',          in: null,    out: null,    hrs: 0,    cat: 'off'   },
-    open730:    { label: 'Open 7:30–4',  in: '07:30', out: '16:00', hrs: 8.5,  cat: 'open'  },
-    open745:    { label: 'Open 7:45–4',  in: '07:45', out: '16:00', hrs: 8.25, cat: 'open'  },
-    osup9:      { label: 'Open Sup 9–5', in: '09:00', out: '17:00', hrs: 8,    cat: 'open'  },
-    osup10:     { label: 'Open Sup 10–6',in: '10:00', out: '18:00', hrs: 8,    cat: 'open'  },
-    mid11:      { label: 'Mid 11–7',     in: '11:00', out: '19:00', hrs: 8,    cat: 'mid'   },
-    mid12:      { label: 'Mid 12–8',     in: '12:00', out: '20:00', hrs: 8,    cat: 'mid'   },
-    latemid:    { label: 'Late Mid 12–10',in:'12:00', out: '22:00', hrs: 10,   cat: 'latemid'},
-    close:      { label: 'Close 4–12:15',in: '16:00', out: '00:15', hrs: 8.25, cat: 'close' },
-    supclose:   { label: 'Sup Close 4–12:30',in:'16:00',out:'00:30',hrs: 8.5,  cat: 'close' },
-    latenight:  { label: 'Late Night 6–2:15', in:'18:00',out:'02:15',hrs:8.25, cat: 'latenight'},
-    suplatenight:{label: 'Sup Late Night 6–2:30',in:'18:00',out:'02:30',hrs:8.5,cat:'latenight'},
-    sam119:     { label: 'Sam 10hr 11–9',in: '11:00', out: '21:00', hrs: 10,   cat: 'long'  },
-    sam1210:    { label: 'Sam 10hr 12–10',in:'12:00', out: '22:00', hrs: 10,   cat: 'long'  },
+    supopen:    { label: 'Sup Open 8:30-4',    in: '08:30', out: '16:00', hrs: 7.5,  cat: 'open' },
+    open:       { label: 'Open 8:45-4',        in: '08:45', out: '16:00', hrs: 7.25, cat: 'open' },
+    opensup:    { label: 'Open Support 9-5',   in: '09:00', out: '17:00', hrs: 8,    cat: 'open' },
+    mid1:       { label: 'Mid 11-7',           in: '11:00', out: '19:00', hrs: 8,    cat: 'mid'  },
+    mid2:       { label: 'Mid 12-8',           in: '12:00', out: '20:00', hrs: 8,    cat: 'mid'  },
+    close:      { label: 'Close 2-10:15',      in: '14:00', out: '22:15', hrs: 8.25, cat: 'close'},
+    supclose:   { label: 'Sup Close 2-10:30',  in: '14:00', out: '22:30', hrs: 8.5,  cat: 'close'},
+    samshift:   { label: 'Sam Shift 11-9',     in: '11:00', out: '21:00', hrs: 10,   cat: 'long' },
+    samclose:   { label: 'Sam Close 12-10',    in: '12:00', out: '22:00', hrs: 10,   cat: 'long' },
+    alissonlate:  { label: 'Alisson Late 1-9',     in: '13:00', out: '21:00', hrs: 8,   cat: 'mid'  },
+    alissonearly: { label: 'Alisson Early 8:30-5', in: '08:30', out: '17:00', hrs: 8.5, cat: 'open' },
     custom:     { label: 'Custom',       in: null,    out: null,    hrs: 0,    cat: 'mid'   },
   };
 
   /* Color class per category — used by both pages' CSS */
   const CAT_CLASS = {
-    off: 'sp-off', open: 'sp-open', mid: 'sp-mid', latemid: 'sp-latemid',
-    close: 'sp-close', latenight: 'sp-latenight', long: 'sp-long'
+    off: 'sp-off', open: 'sp-open', mid: 'sp-mid',
+    close: 'sp-close', long: 'sp-long'
   };
   function shiftClass(type) {
     const def = SHIFT_DEFS[type];
@@ -48,8 +46,8 @@ const HS = (function () {
   }
 
   /* Ordered list for dropdowns */
-  const SHIFT_ORDER = ['off','open730','open745','osup9','osup10','mid11','mid12',
-    'latemid','close','supclose','latenight','suplatenight','sam119','sam1210','custom'];
+  const SHIFT_ORDER = ['off','supopen','open','opensup','mid1','mid2',
+    'close','supclose','samshift','samclose','alissonlate','alissonearly','custom'];
 
   /* ---- ROLES & GROUPS -----------------------------------------------------*/
   const ROLE_GROUPS = [
