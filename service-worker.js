@@ -1,4 +1,4 @@
-const CACHE_NAME = 'honeystash-scheduler-v3';
+const CACHE_NAME = 'honeystash-scheduler-v4';
 const APP_ASSETS = [
   './',
   './index.html',
